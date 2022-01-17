@@ -1,40 +1,78 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Card, Container } from 'react-bootstrap';
+import { Accordion, Card, Col, Container, Row, Spinner, Stack } from 'react-bootstrap';
 import { IPlanetary } from '../../utils/type';
+import LikeBtn from '../like';
 import { getPlanetaryPosts } from './planetary.api';
 
 
 interface IPlanetaryProps {
 }
 
-const Planetary: React.FC<IPlanetaryProps> = ({ }) => {
-    const [data, setData] = useState<IPlanetary[] | null>(null)
+const Planetary: React.FC<IPlanetaryProps> = () => {
+    const [data, setData] = useState<IPlanetary | null>(null)
 
     useEffect(() => {
-        const fetchPlanetartList = async () => {
+        const fetchData = async () => {
             const planetary = await getPlanetaryPosts();
             // console.log(planetary)
             setData(planetary)
         }
-        fetchPlanetartList();
+        fetchData();
     }, [])
 
-
+    console.log("data ::", data)
     return (
-        <div>
-            {data && data.map(info => (
-                <Container>
-                    <Card style={{ width: '18rem' }} key={info.title}>
-                        <Card.Img variant='top' src={info.url}></Card.Img>
-                        <Card.Body>
-                            <Card.Title>{info.title} - {info.date}</Card.Title>
-                            <Card.Text>{info.explanation}</Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Container>
-            )
-            )}
+        <div className='row justify-content-center'>
+            {
+                data == null ? (
+                    <Container className='fluid align-items-center'>
+                        <Row>
+                            <Col md={{ span: 6, offset: 3 }}>
+                                <Spinner animation={'border'}></Spinner>
+                            </Col>
+                        </Row>
+                    </Container>
+                ) : (
+                    <Container className='fluid align-items-center'>
+                        <Row>
+                            <Col md={{ span: 6, offset: 3 }}>
+                                <Stack gap={1}>
+                                    <Card className='mt-5 mb-5'
+                                        style={{ width: '25rem' }}>
+                                        <Card.Header>
+                                            <div className='ml-2'>
+                                                <h4><b>Spacetagram</b></h4>
+                                                <p>Brought to you by NASA's API</p>
+                                            </div>
+                                        </Card.Header>
+                                        <Card.Img
+                                            variant='top'
+                                            src={data.url}
+                                            className='round' />
+                                        <Card.Body style={{ backgroundColor: 'Gainsboro' }}>
+                                            <Card.Title>
+                                                <h5>{data.copyright}</h5>
+                                                <p>{data.title}</p>
+                                                <p>{data.date}</p>
+                                            </Card.Title>
+                                            <LikeBtn />
+                                            <Accordion>
+                                                <Accordion.Item eventKey="0">
+                                                    <Accordion.Header>Tap To Read Article</Accordion.Header>
+                                                    <Accordion.Body>
+                                                        {data.explanation}
+                                                    </Accordion.Body>
+                                                </Accordion.Item>
+                                            </Accordion>
+                                        </Card.Body>
+                                    </Card>
+                                </Stack>
+                            </Col>
+                        </Row>
+                    </Container>
+                )
+            }
         </div>
     );
 }

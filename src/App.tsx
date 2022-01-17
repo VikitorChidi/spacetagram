@@ -7,7 +7,7 @@ const App = () => {
     <>
       <Container>
         <Row>
-          <Col>
+          <Col >
             <Planetary />
           </Col>
         </Row>
