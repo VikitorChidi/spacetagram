@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useLocalStorage } from "../hook/useLocalStorage";
-
+import { useEffect, useState } from "react";
 
 const LikeBtn: React.FC = (props) => {
     const emptyThumbsUp: JSX.Element = <svg
@@ -51,23 +49,17 @@ const LikeBtn: React.FC = (props) => {
     const [countLike, setCountLike] = useState<number>(0)
     const [countDislike, setCountDislike] = useState<number>(0)
 
-    const [state, setState] = useLocalStorage('liked',);
-
-
-
     const toggleUp = () => {
-        let state = liked
         if (!liked) {
             setLiked(true)
             setDisliked(false)
             setCountLike(countLike + 1)
             setCountDislike(0)
-        } else if (state) {
+        } else if (liked) {
             setLiked(false)
             setCountLike(0)
             setCountDislike(0)
         }
-        setState(setCountLike(countLike + 1))
     }
 
     const toggleDown = () => {
@@ -82,6 +74,27 @@ const LikeBtn: React.FC = (props) => {
             setCountDislike(0)
         }
     }
+
+    useEffect(() => {
+        const likedData = localStorage.getItem('liked');
+        const countLikedData = localStorage.getItem('count');
+        const dislikedData = localStorage.getItem('disliked');
+        const countDislikedData = localStorage.getItem('countDisliked');
+
+        if (likedData && countLikedData && dislikedData && countDislikedData) {
+            setLiked(JSON.parse(likedData));
+            setCountLike(JSON.parse(countLikedData));
+            setDisliked(JSON.parse(dislikedData));
+            setCountDislike(JSON.parse(countDislikedData))
+        }
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem('liked', JSON.stringify(liked));
+        localStorage.setItem('count', JSON.stringify(countLike));
+        localStorage.setItem('disliked', JSON.stringify(disliked));
+        localStorage.setItem('countDisliked', JSON.stringify(countDislike))
+    });
 
 
     return (
